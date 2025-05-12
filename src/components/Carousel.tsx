@@ -3,84 +3,88 @@ import './Carousel.scss';
 
 type Props = {
   images: string[];
-  itemWidth: number;
-  frameSize: number;
   step: number;
+  frameSize: number;
+  itemWidth: number;
   animationDuration: number;
   infinite: boolean;
 };
 
 const Carousel: React.FC<Props> = ({
   images,
-  itemWidth,
   frameSize,
   step,
+  itemWidth,
   animationDuration,
   infinite,
 }) => {
-  const [position, setPosition] = useState(0);
+  const [offset, setOffset] = useState(0);
 
-  const lastPosition = -(images.length - frameSize);
-  const nextDisabled = position === lastPosition && !infinite;
-  const prevDisabled = position === 0 && !infinite;
+  const maxOffset = (images.length - frameSize) * itemWidth;
 
-  const handlePrevPosition = () => {
-    if (position < 0) {
-      setPosition(prevPosition =>
-        prevPosition + step < 0 ? prevPosition + step : 0,
-      );
-    } else {
-      setPosition(lastPosition);
-    }
+  const handleNext = () => {
+    setOffset(prev => {
+      if (infinite && prev + step * itemWidth >= maxOffset) {
+        return 0;
+      }
+
+      return Math.min(prev + step * itemWidth, maxOffset);
+    });
   };
 
-  const handleNextPosition = () => {
-    if (position > lastPosition) {
-      setPosition(prevPosition =>
-        prevPosition - step > lastPosition ? prevPosition - step : lastPosition,
-      );
-    } else {
-      setPosition(0);
-    }
+  const handlePrev = () => {
+    setOffset(prev => {
+      if (infinite && prev === 0) {
+        return maxOffset;
+      }
+
+      return Math.max(prev - step * itemWidth, 0);
+    });
   };
+
+  const imageList = images.map((img, index) => {
+    const name = `image-${index + 1}`;
+
+    return (
+      <li key={name}>
+        <img
+          src={img}
+          alt={name}
+          className="Carousel__list-item"
+          width={itemWidth}
+          height={itemWidth}
+        />
+      </li>
+    );
+  });
 
   return (
-    <div className="Carousel" style={{ width: `${itemWidth * frameSize}px` }}>
-      <ul className="Carousel__list">
-        {images.map(image => (
-          <li
-            key={image}
-            style={{
-              transform: `translateX(${position * itemWidth}px)`,
-              transition: `transform ${animationDuration}ms`,
-            }}
-          >
-            <img
-              className="Carousel__image"
-              src={image}
-              alt={image}
-              width={itemWidth}
-            />
-          </li>
-        ))}
+    <div className="Carousel" style={{ width: `${frameSize * itemWidth}px` }}>
+      <ul
+        className="Carousel__list"
+        style={{
+          transform: `translateX(-${offset}px)`,
+          transition: `transform ${animationDuration}ms ease`,
+        }}
+      >
+        {imageList}
       </ul>
 
       <div className="Carousel__buttons">
         <button
-          className="Carousel__button"
+          className="Carousel__button Carousel__button--prev"
           type="button"
-          onClick={handlePrevPosition}
-          disabled={prevDisabled}
+          onClick={handlePrev}
+          disabled={!infinite && offset === 0}
         >
           Prev
         </button>
-
         <button
+          className="Carousel__button Carousel__button--next"
           type="button"
-          className="Carousel__button"
           data-cy="next"
-          onClick={handleNextPosition}
-          disabled={nextDisabled}
+          onClick={handleNext}
+          disabled={!infinite && offset === maxOffset}
         >
           Next
         </button>

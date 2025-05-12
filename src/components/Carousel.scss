@@ -1,38 +1,36 @@
 .Carousel {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 20px;
+  overflow: hidden;
+  position: relative;
+  margin-inline: auto;
+  width: 390px;
 
   &__list {
     display: flex;
-    align-items: center;
     padding: 0;
-    list-style: none;
-    overflow: hidden;
-    border: 1px solid rgb(252, 186, 208);
-    border-radius: 10px;
-    background-color: rgb(248, 236, 238);
-  }
+    margin: 0;
+    transition: transform 0.5s ease;
 
-  &__image {
-    display: flex;
+    li {
+      display: block;
+      list-style-type: none;
+      width: 130px;
+      flex-shrink: 0;
+    }
   }
 
   &__buttons {
-    align-self: center;
     display: flex;
-    gap: 30px;
+    gap: 10px;
+    margin-block: 20px;
+    justify-content: center;
   }
 
   &__button {
-    height: 30px;
-    width: 90px;
-    cursor: pointer;
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+    width: 150px;
+    height: 40px;
+    border-radius: 20px;
+    background-color: #9795c1;
+    font-size: 20px;
+    box-shadow: 5px 5px 10px #5411ac;
   }
 }
